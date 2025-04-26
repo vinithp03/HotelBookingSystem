@@ -6,7 +6,6 @@ export const fetchRooms = createAsyncThunk('rooms/fetchRooms', async () => {
 
   try {
     const res = await fetch(API_URL);
-
     // If API doesn't respond or returns something bad
     if (!res.ok) throw new Error('API error');
 
