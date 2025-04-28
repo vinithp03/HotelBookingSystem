@@ -12,12 +12,10 @@ const Home = () => {
   const [searchLocation, setSearchLocation] = useState('');
   const [availability, setAvailability] = useState('');
 
-  // ⬇️ Fetch rooms on component mount
   useEffect(() => {
     dispatch(fetchRooms());
   }, [dispatch]);
 
-  // ⬇️ Filter logic
   const filteredRooms = rooms.filter((room) => {
     const locationMatch = room.location.toLowerCase().includes(searchLocation.toLowerCase());
     const availabilityMatch = availability ? room.availability === availability : true;
@@ -28,9 +26,30 @@ const Home = () => {
     alert(`Edit Room ID: ${roomId} (implement later)`);
   };
 
-  const handleDelete = (roomId) => {
-    if (window.confirm("Are you sure you want to delete this room?")) {
-      dispatch(deleteRoom(roomId));
+  // ⬇️ FULL ROOM DELETE - send complete room object
+  const handleDelete = async (room) => {
+    console.log(room);
+    if (window.confirm(`Are you sure you want to delete room: ${room.hotelName}?`)) {
+      try {
+        const response = await fetch(`https://your-backend-url.com/rooms/delete`, {
+          method: 'POST', // Using POST because we are sending body
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(room), // Send full room
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete room');
+        }
+
+        // If successful delete from Redux store
+        dispatch(deleteRoom(room.id));
+        alert('Room deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting room:', error);
+        alert('Failed to delete room. Please try again.');
+      }
     }
   };
 
@@ -74,7 +93,7 @@ const Home = () => {
               {isAdmin && (
                 <div className="card-actions">
                   <button className="edit-btn" onClick={() => handleEdit(room.id)}>Edit</button>
-                  <button className="delete-btn" onClick={() => handleDelete(room.id)}>Delete</button>
+                  <button className="delete-btn" onClick={() => handleDelete(room)}>Delete</button>
                 </div>
               )}
             </div>

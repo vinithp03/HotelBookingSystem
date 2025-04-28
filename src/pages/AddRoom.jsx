@@ -23,7 +23,6 @@ const AddRoom = () => {
     e.preventDefault();
 
     try {
-      // Send data to backend
       const response = await fetch('https://your-backend-url.com/rooms', {
         method: 'POST',
         headers: {
